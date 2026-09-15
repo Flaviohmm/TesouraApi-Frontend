@@ -9,6 +9,20 @@ Interface web para gestão de salões de beleza. O projeto consome a API Tesoura
 - Tailwind CSS
 - Lucide React
 
+## Estrutura de código
+
+```text
+src/
+├── hooks/       # Hooks reutilizáveis, como carregamento de dados
+├── services/    # Comunicação com a API
+├── types/       # Contratos TypeScript da API
+├── utils/       # Formatação de valores, horários e slug
+├── App.tsx      # Composição e estado principal da interface
+└── styles.css   # Tema e estilos globais do Tailwind CSS
+```
+
+O Tailwind CSS v4 é carregado pelo plugin `@tailwindcss/vite`. O tema centraliza fontes e cores da marca para que possam ser reutilizadas pelos utilitários Tailwind.
+
 ## Pré-requisitos
 
 - Node.js 20 ou superior

@@ -1,8 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --color-brand-50: #fff8f3;
+  --color-brand-400: #d89f83;
+  --color-brand-500: #ba7863;
+  --color-brand-900: #29222d;
+}
+
 :root {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: #25202c;
     background: #f7f5f1;
     font-synthesis: none;
@@ -28,7 +37,7 @@ button {
 
 .eyebrow {
     color: #8b6658;
-    font: 500 10px 'DM Mono';
+    font: 500 12px 'DM Mono';
     letter-spacing: .13em;
     margin: 0 0 9px;
     text-transform: uppercase;
@@ -134,7 +143,7 @@ button {
     gap: .55rem;
     color: #5f5860;
     font-size: .83rem;
-    font-weight: 600;
+    font-weight: inherit;
     margin-bottom: 1.2rem;
 }
 
@@ -161,7 +170,7 @@ button {
     border-radius: 7px;
     padding: .82rem 1.05rem;
     font-size: .85rem;
-    font-weight: 700;
+    font-weight: inherit;
 }
 
 .primary {
@@ -283,7 +292,7 @@ nav button,
     color: #2f2730;
     display: grid;
     place-items: center;
-    font-weight: 700;
+    font-weight: inherit;
     font-size: .8rem;
 }
 
@@ -771,7 +780,7 @@ nav button,
     color: #9a6555;
     background: transparent;
     font: inherit;
-    font-weight: 700;
+    font-weight: inherit;
 }
 
 .inline-button:hover,

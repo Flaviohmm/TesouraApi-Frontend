@@ -1,6 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { CalendarDays, ChevronLeft, ChevronRight, Clock3, LayoutDashboard, LogOut, Menu, Plus, Scissors, Search, Settings, Sparkles, Users } from 'lucide-react'
-import { api, type Appointment, type Client, type HairService, type LoginResponse, type Professional } from './api'
+import { api } from './services/api'
+import { useData } from './hooks/use-data'
+import type { Appointment, Client, HairService, LoginResponse, Professional } from './types/api'
+import { formatTime, initial, money, slugify } from './utils/format'
 
 type View = 'dashboard' | 'agenda' | 'clients' | 'services'
 const nav: { id: View; label: string; icon: typeof LayoutDashboard }[] = [
@@ -9,8 +12,6 @@ const nav: { id: View; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'clients', label: 'Clientes', icon: Users },
   { id: 'services', label: 'Serviços', icon: Scissors },
 ]
-const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-const initial = (name: string) => name.trim().slice(0, 1).toUpperCase()
 
 export default function App() {
   const [token, setToken] = useState(() => localStorage.getItem('tesoura_token'))
@@ -65,7 +66,7 @@ function Login({ onLogin, onRegister }: { onLogin: (data: LoginResponse) => void
   return <main className="login-page">
     <Brand />
     <section className="login-form-wrap">
-      <form className="login-card" onSubmit={submit}>
+      <form className="login-card font-medium" onSubmit={submit}>
         <div className="mobile-logo"><Scissors size={22} />
           Tesoura
         </div>
@@ -80,11 +81,11 @@ function Login({ onLogin, onRegister }: { onLogin: (data: LoginResponse) => void
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Sua senha" required />
         </label>
         {error && <p className="form-error">{error}</p>}
-        <button className="button primary wide" disabled={loading}>
+        <button className="button primary wide font-medium" disabled={loading}>
           {loading ? 'Entrando...' : 'Entrar no Tesoura'}
         </button>
         <p className="hint">Ainda não tem uma conta?
-          <button type="button" className="inline-button" onClick={onRegister}>Crie seu salão</button>
+          <button type="button" className="inline-button font-medium ml-0.5" onClick={onRegister}>Crie seu salão</button>
         </p>
       </form>
     </section>
@@ -97,7 +98,7 @@ function Brand() {
       <div className="brand-mark">
         <Scissors size={28} />
       </div>
-      <p className="eyebrow">GESTÃO INTELIGENTE</p>
+      <p className="eyebrow font-bold">GESTÃO INTELIGENTE</p>
       <h1>Seu salão no ritmo <em>certo.</em></h1>
       <p>Organize cada detalhe, encante em cada atendimento.</p>
       <div className="ambient ambient-one" />
@@ -106,9 +107,6 @@ function Brand() {
   );
 }
 
-function slugify(value: string) {
-  return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
 
 function Register({ onLogin, onBack }: { onLogin: (data: LoginResponse) => void; onBack: () => void }) {
   const [salonName, setSalonName] = useState('');
@@ -150,11 +148,11 @@ function Register({ onLogin, onBack }: { onLogin: (data: LoginResponse) => void;
   return <main className="login-page">
     <Brand />
     <section className="login-form-wrap register-wrap">
-      <form className="login-card register-card" onSubmit={submit}>
+      <form className="login-card register-card font-medium" onSubmit={submit}>
         <div className="mobile-logo">
           <Scissors size={22} /> Tesoura
         </div>
-        <button type="button" className="back-button" onClick={onBack}>
+        <button type="button" className="back-button font-medium" onClick={onBack}>
           ← Voltar para entrar
         </button>
         <p className="eyebrow">COMECE AGORA</p>
@@ -246,11 +244,11 @@ function Register({ onLogin, onBack }: { onLogin: (data: LoginResponse) => void;
           </label>
         </div>
         {error && <p className="form-error">{error}</p>}
-        <button className="button primary wide" disabled={loading}>
+        <button className="button primary wide font-medium" disabled={loading}>
           {loading ? 'Criando seu salão...' : 'Criar meu salão'}
         </button>
         <p className="hint">Já tem uma conta?
-          <button type="button" className="inline-button" onClick={onBack}>
+          <button type="button" className="inline-button font-medium" onClick={onBack}>
             Entrar
           </button>
         </p>
@@ -342,16 +340,6 @@ function Shell({
   </div>
 }
 
-function useData<T>(path: string) {
-  const [data, setData] = useState<T[]>([]);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    api<T[]>(path)
-      .then(setData)
-      .catch((e: Error) => setError(e.message))
-  }, [path]);
-  return { data, error };
-}
 
 function Empty({ text }: { text: string }) {
   return <div className="empty">
@@ -451,9 +439,6 @@ function AppointmentRow({ appointment }: { appointment: Appointment }) {
   </div>
 }
 
-function formatTime(value: string) {
-  return new Date(value).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-}
 
 function Agenda() {
   const { data, error } = useData<Appointment>('/api/appointments');
