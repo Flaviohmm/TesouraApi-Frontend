@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { api } from '../../services/api';
 import type { LoginResponse } from '../../types/api';
-import { slugify } from '../../utils/format';
+import { formatPhone, slugify } from '../../utils/format';
 import { Brand } from './Brand';
 import { Scissors } from 'lucide-react';
 
@@ -109,9 +109,9 @@ export function Register({ onLogin, onBack }: {
                             <input
                                 type="tel"
                                 value={phone}
-                                onChange={(event) => setPhone(event.target.value)}
+                                onChange={(event) => setPhone(formatPhone(event.target.value))}
                                 placeholder='(85) 99999-9999'
-                                maxLength={20}
+                                maxLength={15}
                             />
                         </label>
                     </div>
