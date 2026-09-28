@@ -34,7 +34,7 @@ export function Shell({ view, setView, menuOpen, setMenuOpen, onLogout }: {
                 <div className="logo">
                     <span>
                         <Scissors size={21} />
-                    </span>tesoura</div>
+                    </span>Tesoura</div>
                 <nav>
                     {nav.map(({ id, label, icon: Icon }) =>
                         <button

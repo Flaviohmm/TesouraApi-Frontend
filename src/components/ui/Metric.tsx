@@ -6,7 +6,7 @@ export function Metric({ label, value, note }: {
     return (
         <article className="metric">
             <p>{label}</p>
-            <h2>{value}</h2>
+            <h2 className="font-sans font-medium">{value}</h2>
             <small>{note}</small>
         </article>
     );

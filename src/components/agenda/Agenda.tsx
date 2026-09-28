@@ -13,7 +13,7 @@ export function Agenda() {
                     <p className="eyebrow">CRONOLOGIA</p>
                     <h2>Todos os horários</h2>
                 </div>
-                <button className="button primary">
+                <button className="font-medium button primary">
                     <Plus size={18} />Agendar
                 </button>
             </div>
