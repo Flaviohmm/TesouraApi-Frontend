@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react'
-import { api } from '../services/api'
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
 
 export function useData<T>(path: string) {
-  const [data, setData] = useState<T[]>([])
-  const [error, setError] = useState('')
+  const [data, setData] = useState<T[]>([]);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    api<T[]>(path).then(setData).catch((requestError: Error) => setError(requestError.message))
-  }, [path])
+  const load = () => {
+    setError('');
+    api<T[]>(path).then(setData).catch((requestError: Error) => setError(requestError.message));
+  }
 
-  return { data, error }
+  useEffect(load, [path]);
+
+  return { data, error, reload: load }
 }

@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
 import type { Client } from '../../types/api';
 import { initial } from '../../utils/format';
 import { Empty } from '../ui/Empty';
+import { ClientForm } from './ClientForm';
 
 export function Clients() {
-    const { data, error } = useData<Client>('/api/clients');
+    const [showForm, setShowForm] = useState(false);
+    const { data, error, reload } = useData<Client>('/api/clients');
 
     return (
         <section className="panel page-panel">
@@ -14,7 +17,7 @@ export function Clients() {
                     <p className="eyebrow">RELACIONAMENTO</p>
                     <h2>Base de clientes</h2>
                 </div>
-                <button className="button primary">
+                <button className="button primary" onClick={() => setShowForm(true)}>
                     <Plus size={18} />Novo cliente
                 </button>
             </div>
@@ -36,6 +39,7 @@ export function Clients() {
                     }
                 </div>
             }
+            {showForm && <ClientForm onClose={() => setShowForm(false)} onCreated={reload} />}
         </section>
     );
 }
