@@ -3,7 +3,7 @@ import { api } from '../../services/api';
 import type { LoginResponse } from '../../types/api';
 import { formatPhone, slugify } from '../../utils/format';
 import { Brand } from './Brand';
-import { Scissors } from 'lucide-react';
+import { AppLogo } from '../ui/AppLogo';
 
 export function Register({ onLogin, onBack }: {
     onLogin: (data: LoginResponse) => void;
@@ -50,9 +50,7 @@ export function Register({ onLogin, onBack }: {
             <Brand />
             <section className="login-form-wrap register-wrap">
                 <form className="login-card register-card font-medium" onSubmit={submit}>
-                    <div className='mobile-logo'>
-                        <Scissors size={22} /> Tesoura
-                    </div>
+                    <AppLogo size="sm" className="mobile-logo" />
                     <button type="button" className="back-button font-medium" onClick={onBack}>
                         ← Voltar para entrar
                     </button>

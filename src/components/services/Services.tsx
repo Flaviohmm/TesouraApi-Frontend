@@ -1,4 +1,5 @@
-import { Clock3, Plus, Scissors } from 'lucide-react';
+import { Clock3, Plus } from 'lucide-react';
+import { ScissorsIcon } from '../ui/ScissorsIcon';
 import { useData } from '../../hooks/use-data';
 import type { HairService, Professional } from '../../types/api';
 import { money } from '../../utils/format';
@@ -26,7 +27,7 @@ export function Services() {
                         data.map((service) =>
                             <article className="service-card" key={service.id}>
                                 <div className="service-icon">
-                                    <Scissors size={20} />
+                                    <ScissorsIcon size={20} />
                                 </div>
                                 <span>{service.category || 'Beleza'}</span>
                                 <h3>{service.name}</h3>

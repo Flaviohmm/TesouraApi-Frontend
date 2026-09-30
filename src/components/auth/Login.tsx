@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Scissors } from 'lucide-react';
+import { AppLogo } from '../ui/AppLogo';
 import { api } from '../../services/api';
 import type { LoginResponse } from '../../types/api';
 import { Brand } from './Brand';
@@ -37,9 +37,7 @@ export function Login({ onLogin, onRegister }: {
             <Brand />
             <section className="login-form-wrap">
                 <form className="login-card font-medium" onSubmit={submit}>
-                    <div className="mobile-logo">
-                        <Scissors size={22} /> Tesoura
-                    </div>
+                    <AppLogo size="sm" className="mobile-logo" />
                     <p className="eyebrow">BEM-VINDO DE VOLTA</p>
                     <h2>Entre na sua conta</h2>
                     <label>

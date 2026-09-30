@@ -7,6 +7,7 @@ import { AppointmentRow } from '../ui/AppointmentRow';
 import { Empty } from '../ui/Empty';
 import { Metric } from '../ui/Metric';
 import { MotionGallery } from '../ui/MotionGallery';
+import { IconGallery } from '../ui/IconGallery';
 
 export function Dashboard({ setView }: {
     setView: (view: View) => void;
@@ -70,5 +71,6 @@ export function Dashboard({ setView }: {
             </div>
         </section>
         <MotionGallery />
+        <IconGallery />
     </>
 }
