@@ -49,7 +49,9 @@ export function Dashboard({ setView }: {
                 {error ?
                     <Empty text={error} /> :
                     appointments.length ?
-                        appointments.slice(0, 4).map((item) => <AppointmentRow appointment={item} key={item.id} />) :
+                        <div className="motion-list">
+                            {appointments.slice(0, 4).map((item) => <AppointmentRow appointment={item} key={item.id} />)}
+                        </div> :
                         <Empty text="Seu dia está livre. Que tal abrir um horário?" />
                 }
             </div>
