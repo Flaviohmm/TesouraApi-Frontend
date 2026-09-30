@@ -9,7 +9,7 @@ export function Services() {
     const { data: professionals } = useData<Professional>('/api/professionals');
 
     return (
-        <section className="panel page-panel">
+        <section className="panel page-panel glass-enter">
             <div className="panel-title">
                 <div>
                     <p className="eyebrow">CARDÁPIO</p>
@@ -21,7 +21,7 @@ export function Services() {
             </div>
             {error ?
                 <Empty text={error} /> :
-                <div className="service-grid">
+                <div className="service-grid motion-list">
                     {data.length ?
                         data.map((service) =>
                             <article className="service-card" key={service.id}>

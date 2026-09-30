@@ -7,7 +7,7 @@ import { Empty } from '../ui/Empty';
 export function Agenda() {
     const { data, error } = useData<Appointment>('/api/appointments');
     return (
-        <section className="panel page-panel">
+        <section className="panel page-panel glass-enter">
             <div className="panel-title">
                 <div>
                     <p className="eyebrow">CRONOLOGIA</p>
@@ -23,9 +23,9 @@ export function Agenda() {
             {error ?
                 <Empty text={error} /> :
                 data.length ?
-                    data.sort((a, b) =>
+                    <div className="motion-list">{data.sort((a, b) =>
                         a.startsAt.localeCompare(b.startsAt)).map((item) =>
-                            <AppointmentRow appointment={item} key={item.id} />) :
+                            <AppointmentRow appointment={item} key={item.id} />)}</div> :
                     <Empty text="Nenhum agendamento encontrado." />
             }
         </section>

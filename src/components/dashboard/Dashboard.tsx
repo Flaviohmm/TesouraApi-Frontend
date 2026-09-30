@@ -6,6 +6,7 @@ import { formatTime, money } from '../../utils/format';
 import { AppointmentRow } from '../ui/AppointmentRow';
 import { Empty } from '../ui/Empty';
 import { Metric } from '../ui/Metric';
+import { MotionGallery } from '../ui/MotionGallery';
 
 export function Dashboard({ setView }: {
     setView: (view: View) => void;
@@ -68,5 +69,6 @@ export function Dashboard({ setView }: {
                 </button>
             </div>
         </section>
+        <MotionGallery />
     </>
 }

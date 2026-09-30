@@ -11,7 +11,7 @@ export function Clients() {
     const { data, error, reload } = useData<Client>('/api/clients');
 
     return (
-        <section className="panel page-panel">
+        <section className="panel page-panel glass-enter">
             <div className="panel-title">
                 <div>
                     <p className="eyebrow">RELACIONAMENTO</p>
@@ -23,7 +23,7 @@ export function Clients() {
             </div>
             {error ?
                 <Empty text={error} /> :
-                <div className="table">
+                <div className="table motion-list">
                     {data.length ?
                         data.map((client) =>
                             <div className="client-row" key={client.id}>
