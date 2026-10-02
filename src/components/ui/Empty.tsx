@@ -3,8 +3,10 @@ import { Sparkles } from 'lucide-react';
 export function Empty({ text }: { text: string }) {
     return (
         <div className="empty">
-            <Sparkles size={21} />
-            <p>{text}</p>
+            <div className="empty-mark">
+                <Sparkles size={18} />
+            </div>
+            <p className="empty-text">{text}</p>
         </div>
     );
 }

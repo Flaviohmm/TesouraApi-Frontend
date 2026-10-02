@@ -1,4 +1,4 @@
-import { ChevronRight, Plus, Sparkles } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
 import type { Appointment } from '../../types/api';
 import type { View } from '../../types/view';
@@ -19,58 +19,118 @@ export function Dashboard({ setView }: {
     const total = appointments.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
     const occupancy = Math.min(appointments.length * 17, 100);
 
-    return <>
-        <section className="hero">
-            <div>
-                <span className="hero-chip">
-                    <Sparkles size={15} /> EM FOCO
-                </span>
-                <h2>Faça o dia de hoje<br />ser <em>memorável.</em></h2>
-                <p>Você tem {appointments.length} atendimentos para transformar.</p>
-            </div>
-            <button className="button light" onClick={() => setView('agenda')}>
-                <Plus size={18} />Novo agendamento
-            </button>
-        </section>
-        <section className="metrics">
-            <Metric label="Atendimentos hoje" value={String(appointments.length).padStart(2, '0')} note="Agenda do dia" />
-            <Metric label="Previsão de receita" value={money.format(total)} note="Com base nos horários" />
-            <Metric label="Próximo horário" value={appointments[0] ? formatTime(appointments[0].startsAt) : '—'} note={appointments[0]?.clientName ?? 'Sem agendamentos'} />
-        </section>
-        <section className="content-grid">
-            <div className="panel schedule">
-                <div className="panel-title">
-                    <div>
-                        <p className="eyebrow">AGENDA</p>
-                        <h2>Próximos atendimentos</h2>
+    return (
+        <div className="dashboard-content">
+            {/* Caustic Hero Banner */}
+            <section className="caustic-hero">
+                <div className="caustic-hero-bg" aria-hidden="true">
+                    <div className="hero-radial hero-radial-amber" />
+                    <div className="hero-radial hero-radial-cool" />
+                </div>
+                <div className="caustic-hero-content">
+                    <div className="tag">
+                        <i />
+                        <span className="mono">01 · SALON WORKBENCH</span>
                     </div>
-                    <button className="text-button" onClick={() => setView('agenda')}>Ver agenda</button>
+                    <h1>
+                        Precisão como <em>essência.</em>
+                    </h1>
+                    <p className="caustic-hero-lead">
+                        Calibre cada detalhe no ritmo exato. Você tem <strong>{appointments.length}</strong> atendimentos
+                        agendados hoje para transformar em experiências memoráveis.
+                    </p>
+                    <div className="caustic-hero-cta">
+                        <button className="btn primary" onClick={() => setView('agenda')}>
+                            <Plus size={16} /> Novo agendamento
+                        </button>
+                        <button className="btn secondary" onClick={() => setView('services')}>
+                            Explorar catálogo
+                        </button>
+                    </div>
                 </div>
-                {error ?
-                    <Empty text={error} /> :
-                    appointments.length ?
-                        <div className="motion-list">
-                            {appointments.slice(0, 4).map((item) => <AppointmentRow appointment={item} key={item.id} />)}
-                        </div> :
-                        <Empty text="Seu dia está livre. Que tal abrir um horário?" />
-                }
-            </div>
-            <div className="panel pulse">
-                <p className="eyebrow">RESUMO</p>
-                <h2>O pulso do salão</h2>
-                <div className="progress-label">
-                    <span>Taxa de ocupação</span>
-                    <b>{occupancy}%</b>
+                <div className="caustic-hero-spec mono">
+                    <div>CALIBRAÇÃO · ESTÁVEL</div>
+                    <div>STATUS · EM OPERAÇÃO</div>
                 </div>
-                <div className="progress">
-                    <i style={{ width: `${occupancy}%` }} />
+            </section>
+
+            {/* Metrics Telemetry Grid */}
+            <section className="metrics">
+                <Metric
+                    label="ATENDIMENTOS HOJE"
+                    value={String(appointments.length).padStart(2, '0')}
+                    note="Agenda do dia em execução"
+                />
+                <Metric
+                    label="PREVISÃO DE RECEITA"
+                    value={money.format(total)}
+                    note="Calculado com base nos serviços"
+                />
+                <Metric
+                    label="PRÓXIMO HORÁRIO"
+                    value={appointments[0] ? formatTime(appointments[0].startsAt) : '—'}
+                    note={appointments[0]?.clientName ?? 'Sem atendimentos na fila'}
+                />
+            </section>
+
+            {/* Ledger & Telemetry Split */}
+            <section className="content-grid">
+                <div className="panel schedule-panel">
+                    <div className="panel-title">
+                        <div>
+                            <div className="tag">
+                                <i />
+                                <span className="mono">CRONOGRAMA</span>
+                            </div>
+                            <h2>Próximos atendimentos</h2>
+                        </div>
+                        <button className="text-button mono" onClick={() => setView('agenda')}>
+                            VER AGENDA <ChevronRight size={14} />
+                        </button>
+                    </div>
+
+                    {error ? (
+                        <Empty text={error} />
+                    ) : appointments.length ? (
+                        <div className="caustic-rows-list">
+                            {appointments.slice(0, 4).map((item) => (
+                                <AppointmentRow appointment={item} key={item.id} />
+                            ))}
+                        </div>
+                    ) : (
+                        <Empty text="Seu cronograma está livre no momento." />
+                    )}
                 </div>
-                <p className="small-copy">Acompanhe a agenda e mantenha seu ritmo.</p>
-                <button className="text-button" onClick={() => setView('clients')}>
-                    Ver clientes <ChevronRight size={16} />
-                </button>
-            </div>
-        </section>
-        <MotionGallery />
-    </>
+
+                <div className="panel pulse-panel">
+                    <div className="tag">
+                        <i />
+                        <span className="mono">TELEMETRIA</span>
+                    </div>
+                    <h2>Pulso do salão</h2>
+
+                    <div className="telemetry-box">
+                        <div className="progress-label">
+                            <span className="mono">TAXA DE OCUPAÇÃO</span>
+                            <b className="mono">{occupancy}%</b>
+                        </div>
+                        <div className="caustic-rail">
+                            <i style={{ width: `${occupancy}%` }} />
+                        </div>
+                    </div>
+
+                    <p className="small-copy">
+                        Acompanhe a cadência de agendamentos e mantenha seu fluxo em alta performance.
+                    </p>
+
+                    <button className="btn secondary wide" onClick={() => setView('clients')}>
+                        Gerenciar clientes <ChevronRight size={14} />
+                    </button>
+                </div>
+            </section>
+
+            {/* Design System Specimens */}
+            <MotionGallery />
+        </div>
+    );
 }

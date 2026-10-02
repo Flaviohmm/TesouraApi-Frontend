@@ -32,39 +32,44 @@ export function ClientForm({ onClose, onCreated }: { onClose: () => void; onCrea
       });
       onCreated();
       onClose();
-    }
-    catch (reason) {
+    } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Não foi possível cadastrar o cliente.');
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   }
+
   return (
-    <div className="modal-backdrop" role="presentation">
+    <div className="modal-backdrop" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="client-modal" role="dialog" aria-modal="true" aria-labelledby="client-form-title">
         <div className="modal-header">
           <div>
-            <p className="eyebrow">RELACIONAMENTO</p>
-            <h2 id="client-form-title">Novo cliente</h2>
+            <div className="tag">
+              <i />
+              <span className="mono">NOVO CADASTRO</span>
+            </div>
+            <h2 id="client-form-title">Adicionar Cliente</h2>
           </div>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Fechar">
-            <X size={20} />
+          <button type="button" className="modal-close" onClick={onClose} aria-label="Fechar modal">
+            <X size={18} />
           </button>
         </div>
+
         <form onSubmit={submit} className="client-form">
           <label>
-            Nome completo
+            <span className="form-label mono">NOME COMPLETO</span>
             <input
               value={form.name}
               onChange={(event) => update('name', event.target.value)}
               maxLength={120}
-              placeholder="Nome do cliente"
+              placeholder="ex: Helena Albuquerque"
               required
             />
           </label>
+
           <div className="form-grid">
-            <label>Telefone
+            <label>
+              <span className="form-label mono">TELEFONE</span>
               <input
                 type="tel"
                 value={form.phone}
@@ -74,8 +79,11 @@ export function ClientForm({ onClose, onCreated }: { onClose: () => void; onCrea
                 required
               />
             </label>
-            <label>E-mail
-              <span className="optional">opcional</span>
+            <label>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="form-label mono">E-MAIL</span>
+                <span className="optional mono">OPCIONAL</span>
+              </div>
               <input
                 type="email"
                 value={form.email}
@@ -85,30 +93,39 @@ export function ClientForm({ onClose, onCreated }: { onClose: () => void; onCrea
               />
             </label>
           </div>
+
           <div className="form-grid">
-            <label>Data de nascimento
-              <span className="optional">opcional</span>
+            <label>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="form-label mono">DATA DE NASCIMENTO</span>
+                <span className="optional mono">OPCIONAL</span>
+              </div>
               <input
                 type="date"
                 value={form.birthday}
                 onChange={(event) => update('birthday', event.target.value)}
               />
             </label>
-            <label>Observações
-              <span className="optional">opcional</span>
+            <label>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="form-label mono">OBSERVAÇÕES</span>
+                <span className="optional mono">OPCIONAL</span>
+              </div>
               <input
                 value={form.notes}
                 onChange={(event) => update('notes', event.target.value)}
-                placeholder="Preferências, cuidados..."
+                placeholder="Preferências, produtos, cuidados..."
               />
             </label>
           </div>
-          {error && <p className="form-error">{error}</p>}
+
+          {error && <p className="form-error mono">{error}</p>}
+
           <div className="modal-actions">
-            <button type="button" className="button secondary" onClick={onClose}>
+            <button type="button" className="btn secondary" onClick={onClose}>
               Cancelar
             </button>
-            <button className="button primary" disabled={loading}>
+            <button className="btn primary" disabled={loading}>
               {loading ? 'Salvando...' : 'Adicionar cliente'}
             </button>
           </div>

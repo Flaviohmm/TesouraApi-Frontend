@@ -3,12 +3,14 @@ import type { SVGProps } from 'react';
 type ScissorsIconProps = SVGProps<SVGSVGElement> & {
     size?: number;
     strokeWidth?: number;
+    pivotFill?: string;
 };
 
 export function ScissorsIcon({
     size = 24,
-    strokeWidth = 2,
+    strokeWidth = 1.75,
     className,
+    pivotFill = 'var(--amb)',
     ...props
 }: ScissorsIconProps) {
     return (
@@ -30,7 +32,7 @@ export function ScissorsIcon({
             <circle cx="16.9" cy="18.15" r="2.15" />
             <path d="M8.35 16.4 17.35 3.82" />
             <path d="M15.65 16.4 6.65 3.82" />
-            <circle cx="12" cy="11.3" r="1.15" fill="currentColor" stroke="none" />
+            <circle cx="12" cy="11.3" r="1.3" fill={pivotFill} stroke="none" />
         </svg>
     );
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
 import { AppLogo } from '../ui/AppLogo';
 import { api } from '../../services/api';
 import type { LoginResponse } from '../../types/api';
@@ -24,11 +25,11 @@ export function Login({ onLogin, onRegister }: {
                     method: 'POST',
                     body: JSON.stringify({ email, password })
                 })
-            )
+            );
         } catch (reason) {
-            setError(reason instanceof Error ? reason.message : 'Erro ao entrar.')
+            setError(reason instanceof Error ? reason.message : 'Erro ao autenticar no sistema.');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
@@ -36,12 +37,21 @@ export function Login({ onLogin, onRegister }: {
         <main className="login-page">
             <Brand />
             <section className="login-form-wrap">
-                <form className="login-card font-medium" onSubmit={submit}>
+                <form className="login-card" onSubmit={submit}>
                     <AppLogo size="sm" className="mobile-logo" />
-                    <p className="eyebrow">BEM-VINDO DE VOLTA</p>
-                    <h2>Entre na sua conta</h2>
-                    <label>
-                        E-mail
+                    <div className="tag">
+                        <i />
+                        <span className="mono">AUTENTICAÇÃO SEGURA</span>
+                    </div>
+                    <h2>Acesso ao Workbench</h2>
+                    <p className="login-card-subtitle">
+                        Insira suas credenciais para acessar os módulos do seu salão.
+                    </p>
+
+                    <label className="input-group">
+                        <span className="form-label mono">
+                            <Mail size={12} /> E-MAIL
+                        </span>
                         <input
                             type="email"
                             value={email}
@@ -50,25 +60,33 @@ export function Login({ onLogin, onRegister }: {
                             required
                         />
                     </label>
-                    <label>
-                        Senha
+
+                    <label className="input-group">
+                        <span className="form-label mono">
+                            <Lock size={12} /> SENHA
+                        </span>
                         <input
                             type="password"
                             value={password}
                             onChange={(event) => setPassword(event.target.value)}
-                            placeholder="Sua senha"
+                            placeholder="••••••••••••"
                             required
                         />
                     </label>
-                    {error && <p className="form-error">{error}</p>}
-                    <button className="button primary wide font-medium" disabled={loading}>
-                        {loading ? 'Entrando...' : 'Entrar no Tesoura'}
+
+                    {error && <p className="form-error mono">{error}</p>}
+
+                    <button className="btn primary wide" disabled={loading}>
+                        {loading ? 'Validando acesso...' : 'Entrar no Tesoura'}
+                        {!loading && <ArrowRight size={15} />}
                     </button>
-                    <p className="hint">Ainda não tem uma conta?
-                        <button type="button" className="inline-button font-medium ml-0.5" onClick={onRegister}>
-                            Crie seu salão
+
+                    <div className="auth-footer mono">
+                        <span>Ainda não possui conta?</span>
+                        <button type="button" className="auth-link" onClick={onRegister}>
+                            Criar novo salão →
                         </button>
-                    </p>
+                    </div>
                 </form>
             </section>
         </main>

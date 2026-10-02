@@ -1,6 +1,6 @@
 import { ScissorsIcon } from './ScissorsIcon';
 
-const iconSize = { sm: 21, md: 24, lg: 28 } as const;
+const iconSize = { sm: 18, md: 22, lg: 28 } as const;
 
 export function AppLogo({
     showName = true,
@@ -18,9 +18,14 @@ export function AppLogo({
             aria-label={showName ? undefined : 'Tesoura'}
         >
             <span className="app-logo-mark">
-                <ScissorsIcon size={iconSize[size]} strokeWidth={size === 'lg' ? 1.6 : 1.8} />
+                <ScissorsIcon size={iconSize[size]} strokeWidth={size === 'lg' ? 1.6 : 1.75} pivotFill="var(--amb)" />
             </span>
-            {showName && <span className="app-logo-name">Tesoura</span>}
+            {showName && (
+                <span className="app-logo-content">
+                    <b className="app-logo-name">TESOURA</b>
+                    <span className="app-logo-subtitle">OPTICS WORKBENCH</span>
+                </span>
+            )}
         </span>
     );
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { api } from '../../services/api';
 import type { LoginResponse } from '../../types/api';
 import { formatPhone, slugify } from '../../utils/format';
@@ -26,8 +27,11 @@ export function Register({ onLogin, onBack }: {
 
     async function submit(event: FormEvent) {
         event.preventDefault();
-        if (password !== confirmation)
+        if (password !== confirmation) {
             return setError('As senhas não coincidem.');
+        }
+        setLoading(true);
+        setError('');
         try {
             onLogin(
                 await api<LoginResponse>(
@@ -37,7 +41,7 @@ export function Register({ onLogin, onBack }: {
                         body: JSON.stringify({ salonName, slug, ownerName, email, password, phone: phone || undefined })
                     }
                 )
-            )
+            );
         } catch (reason) {
             setError(reason instanceof Error ? reason.message : 'Não foi possível criar seu salão.');
         } finally {
@@ -49,103 +53,128 @@ export function Register({ onLogin, onBack }: {
         <main className="login-page">
             <Brand />
             <section className="login-form-wrap register-wrap">
-                <form className="login-card register-card font-medium" onSubmit={submit}>
+                <form className="login-card register-card" onSubmit={submit}>
                     <AppLogo size="sm" className="mobile-logo" />
-                    <button type="button" className="back-button font-medium" onClick={onBack}>
-                        ← Voltar para entrar
+                    <button type="button" className="back-link mono" onClick={onBack}>
+                        <ArrowLeft size={13} /> VOLTAR PARA LOGIN
                     </button>
-                    <p className="eyebrow">COMECE AGORA</p>
-                    <h2>Crie seu salão</h2>
+
+                    <div className="tag">
+                        <i />
+                        <span className="mono">NOVA INSTÂNCIA</span>
+                    </div>
+                    <h2>Configure seu Salão</h2>
+                    <p className="login-card-subtitle">
+                        Preencha as informações para inicializar seu ambiente de trabalho.
+                    </p>
+
                     <div className="form-grid">
-                        <label>
-                            Nome do salão
+                        <label className="input-group">
+                            <span className="form-label mono">NOME DO SALÃO</span>
                             <input
                                 value={salonName}
                                 onChange={(event) => updateSalonName(event.target.value)}
-                                placeholder='Studio Aurora'
+                                placeholder="ex: Studio Aurora"
                                 maxLength={120}
                                 required
                             />
                         </label>
-                        <label>
-                            Seu nome
+                        <label className="input-group">
+                            <span className="form-label mono">SEU NOME</span>
                             <input
                                 value={ownerName}
                                 onChange={(event) => setOwnerName(event.target.value)}
-                                placeholder='Como quer ser chamado?'
+                                placeholder="Nome do proprietário"
                                 maxLength={120}
                                 required
                             />
                         </label>
                     </div>
-                    <label>
-                        Endereço do salão
+
+                    <label className="input-group">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span className="form-label mono">ENDEREÇO DO SALÃO</span>
+                            <span className="optional mono">IDENTIFICADOR ÚNICO</span>
+                        </div>
                         <input
                             value={slug}
                             onChange={(event) => setSlug(slugify(event.target.value))}
-                            placeholder='studio-aurora'
+                            placeholder="studio-aurora"
                             maxLength={80}
-                            pattern='[a-z0-9]+(?:-[a-z0-9]+)*'
+                            pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
                             required
                         />
-                        <small>tesoura.app/{slug || 'seu-salao'}</small>
+                        <span className="slug-preview mono">
+                            URL: tesoura.app/<strong>{slug || 'seu-salao'}</strong>
+                        </span>
                     </label>
-                    <div className='form-grid'>
-                        <label>
-                            E-mail
+
+                    <div className="form-grid">
+                        <label className="input-group">
+                            <span className="form-label mono">E-MAIL COMERCIAL</span>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(event) => setEmail(event.target.value)}
-                                placeholder='voce@seusalao.com'
+                                placeholder="contato@seusalao.com"
                                 required
                             />
                         </label>
-                        <label>
-                            Telefone
-                            <span className='optional'>opcional</span>
+                        <label className="input-group">
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span className="form-label mono">TELEFONE</span>
+                                <span className="optional mono">OPCIONAL</span>
+                            </div>
                             <input
                                 type="tel"
                                 value={phone}
                                 onChange={(event) => setPhone(formatPhone(event.target.value))}
-                                placeholder='(85) 99999-9999'
+                                placeholder="(85) 99999-9999"
                                 maxLength={15}
                             />
                         </label>
                     </div>
+
                     <div className="form-grid">
-                        <label>Senha
+                        <label className="input-group">
+                            <span className="form-label mono">SENHA DE ACESSO</span>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(event) => setPassword(event.target.value)}
-                                placeholder='Minimo de 8 caracteres'
+                                placeholder="Mínimo 8 caracteres"
                                 minLength={8}
                                 maxLength={80}
                                 required
                             />
                         </label>
-                        <label>Confirmar senha
+                        <label className="input-group">
+                            <span className="form-label mono">CONFIRMAR SENHA</span>
                             <input
                                 type="password"
                                 value={confirmation}
                                 onChange={(event) => setConfirmation(event.target.value)}
-                                placeholder='Repita sua senha'
+                                placeholder="Repita a senha"
                                 minLength={8}
                                 maxLength={80}
                                 required
                             />
                         </label>
                     </div>
-                    {error && <p className="form-error">{error}</p>}
-                    <button className="button primary wide font-medium" disabled={loading}>
-                        {loading ? 'Criando seu salão...' : 'Criar meu salão'}
+
+                    {error && <p className="form-error mono">{error}</p>}
+
+                    <button className="btn primary wide" disabled={loading}>
+                        {loading ? 'Inicializando salão...' : 'Criar meu salão'}
+                        {!loading && <ArrowRight size={15} />}
                     </button>
-                    <p className='hint'>Já tem uma conta?
-                        <button type='button' className='inline-button font-medium ml-0.5' onClick={onBack}>
-                            Entrar
+
+                    <div className="auth-footer mono">
+                        <span>Já possui um salão registrado?</span>
+                        <button type="button" className="auth-link" onClick={onBack}>
+                            Acessar conta →
                         </button>
-                    </p>
+                    </div>
                 </form>
             </section>
         </main>

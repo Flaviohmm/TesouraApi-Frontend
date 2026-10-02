@@ -9,7 +9,7 @@ import { AppLogo } from '../ui/AppLogo';
 import { ScissorsIcon } from '../ui/ScissorsIcon';
 
 const nav = [
-    { id: 'dashboard', label: 'Visão geral', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Visão Geral', icon: LayoutDashboard },
     { id: 'agenda', label: 'Agenda', icon: CalendarDays },
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'services', label: 'Serviços', icon: ScissorsIcon }
@@ -25,63 +25,95 @@ export function Shell({ view, setView, menuOpen, setMenuOpen, onLogout }: {
     const name = localStorage.getItem('tesoura_name') || 'Meu salão';
     const titles: Record<View, string> = {
         dashboard: `Olá, ${name.split(' ')[0]}`,
-        agenda: 'Sua agenda',
-        clients: 'Seus clientes',
-        services: 'Catálogo de serviços'
+        agenda: 'Agenda de Atendimentos',
+        clients: 'Diretório de Clientes',
+        services: 'Catálogo de Serviços'
     };
+
+    const formattedDate = new Date().toLocaleDateString('pt-BR', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }).toUpperCase();
 
     return (
         <div className="app-shell">
+            {/* Ambient Background Noise & Refraction */}
+            <div id="grain" aria-hidden="true" />
+
+            {/* Sidebar */}
             <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
-                <AppLogo size="sm" className="logo" />
-                <nav>
-                    {nav.map(({ id, label, icon: Icon }) =>
+                <div className="sidebar-top">
+                    <AppLogo size="sm" className="logo" />
+                </div>
+
+                <nav className="sidebar-nav">
+                    <div className="nav-group-label mono">MÓDULOS</div>
+                    {nav.map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
-                            className={view === id ? 'active' : ''}
+                            className={`nav-item ${view === id ? 'active' : ''}`}
                             onClick={() => { setView(id); setMenuOpen(false) }}
                         >
-                            <Icon size={19} />
-                            {label}
+                            <span className="nav-ind" aria-hidden="true" />
+                            <Icon size={18} className="nav-icon" />
+                            <span className="nav-label">{label}</span>
                         </button>
-                    )}
+                    ))}
                 </nav>
+
                 <div className="sidebar-bottom">
-                    <button>
-                        <Settings size={19} />Configurações
+                    <button className="nav-item action-item">
+                        <Settings size={18} className="nav-icon" />
+                        <span className="nav-label">Configurações</span>
                     </button>
-                    <button onClick={onLogout}>
-                        <LogOut size={19} />Sair
+                    <button className="nav-item action-item" onClick={onLogout}>
+                        <LogOut size={18} className="nav-icon" />
+                        <span className="nav-label">Sair</span>
                     </button>
                     <div className="account">
-                        <div>{initial(name)}</div>
-                        <span>
-                            <b>{name}</b>
-                            <small>Administrador</small>
-                        </span>
+                        <div className="avatar-chip">{initial(name)}</div>
+                        <div className="account-info">
+                            <b className="account-name">{name}</b>
+                            <small className="account-role mono">ADMINISTRADOR</small>
+                        </div>
                     </div>
                 </div>
             </aside>
+
             {menuOpen && <div className="backdrop" onClick={() => setMenuOpen(false)} />}
+
+            {/* Main Content Area */}
             <main className="workspace">
-                <header>
-                    <button className="mobile-menu" onClick={() => setMenuOpen(true)}>
-                        <Menu />
+                <header className="workspace-header">
+                    <button className="mobile-menu" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">
+                        <Menu size={20} />
                     </button>
-                    <div>
-                        <p className="eyebrow">
-                            {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-                        </p>
+                    <div className="workspace-title-block">
+                        <div className="tag">
+                            <i />
+                            <span className="mono">{formattedDate}</span>
+                        </div>
                         <h1>{titles[view]}</h1>
                     </div>
-                    <button className="icon-button">
-                        <Search size={21} />
-                    </button>
+                    <div className="header-actions">
+                        <div className="system-pill mono">
+                            <i className="status-live-dot" />
+                            <span>WORKBENCH ATIVO</span>
+                        </div>
+                        <button className="icon-button" aria-label="Buscar">
+                            <Search size={18} />
+                        </button>
+                    </div>
                 </header>
-                {view === 'dashboard' && <Dashboard setView={setView} />}
-                {view === 'agenda' && <Agenda />}
-                {view === 'clients' && <Clients />}
-                {view === 'services' && <Services />}
+
+                <div className="workspace-body">
+                    {view === 'dashboard' && <Dashboard setView={setView} />}
+                    {view === 'agenda' && <Agenda />}
+                    {view === 'clients' && <Clients />}
+                    {view === 'services' && <Services />}
+                </div>
             </main>
         </div>
     );
