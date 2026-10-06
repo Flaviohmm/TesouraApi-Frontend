@@ -4,6 +4,7 @@ import type { Appointment } from '../../types/api';
 import type { View } from '../../types/view';
 import { formatTime, money } from '../../utils/format';
 import { AppointmentRow } from '../ui/AppointmentRow';
+import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 import { Metric } from '../ui/Metric';
 import { MotionGallery } from '../ui/MotionGallery';
@@ -15,14 +16,14 @@ export function Dashboard({ setView }: {
     from.setHours(0, 0, 0, 0);
     const to = new Date(from);
     to.setDate(to.getDate() + 1);
-    const { data: appointments, error } = useData<Appointment>(`/api/appointments?from=${from.toISOString()}&to=${to.toISOString()}`);
+    const { data: appointments, error, loading } = useData<Appointment>(`/api/appointments?from=${from.toISOString()}&to=${to.toISOString()}`);
     const total = appointments.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
     const occupancy = Math.min(appointments.length * 17, 100);
 
     return (
-        <div className="dashboard-content">
+        <div className="dashboard-content caustic-stagger-container">
             {/* Caustic Hero Banner */}
-            <section className="caustic-hero">
+            <section className="caustic-hero caustic-anim-reveal-1">
                 <div className="caustic-hero-bg" aria-hidden="true">
                     <div className="hero-radial hero-radial-amber" />
                     <div className="hero-radial hero-radial-cool" />
@@ -55,26 +56,26 @@ export function Dashboard({ setView }: {
             </section>
 
             {/* Metrics Telemetry Grid */}
-            <section className="metrics">
+            <section className="metrics caustic-anim-reveal-2">
                 <Metric
                     label="ATENDIMENTOS HOJE"
-                    value={String(appointments.length).padStart(2, '0')}
+                    value={loading ? '...' : String(appointments.length).padStart(2, '0')}
                     note="Agenda do dia em execução"
                 />
                 <Metric
                     label="PREVISÃO DE RECEITA"
-                    value={money.format(total)}
+                    value={loading ? '...' : money.format(total)}
                     note="Calculado com base nos serviços"
                 />
                 <Metric
                     label="PRÓXIMO HORÁRIO"
-                    value={appointments[0] ? formatTime(appointments[0].startsAt) : '—'}
+                    value={loading ? '...' : (appointments[0] ? formatTime(appointments[0].startsAt) : '—')}
                     note={appointments[0]?.clientName ?? 'Sem atendimentos na fila'}
                 />
             </section>
 
             {/* Ledger & Telemetry Split */}
-            <section className="content-grid">
+            <section className="content-grid caustic-anim-reveal-3">
                 <div className="panel schedule-panel">
                     <div className="panel-title">
                         <div>
@@ -89,7 +90,9 @@ export function Dashboard({ setView }: {
                         </button>
                     </div>
 
-                    {error ? (
+                    {loading ? (
+                        <CausticLoader label="CALIBRANDO CRONOGRAMA" variant="panel" />
+                    ) : error ? (
                         <Empty text={error} />
                     ) : appointments.length ? (
                         <div className="caustic-rows-list">
@@ -112,7 +115,7 @@ export function Dashboard({ setView }: {
                     <div className="telemetry-box">
                         <div className="progress-label">
                             <span className="mono">TAXA DE OCUPAÇÃO</span>
-                            <b className="mono">{occupancy}%</b>
+                            <b className="mono">{loading ? '...' : `${occupancy}%`}</b>
                         </div>
                         <div className="caustic-rail">
                             <i style={{ width: `${occupancy}%` }} />
@@ -130,7 +133,9 @@ export function Dashboard({ setView }: {
             </section>
 
             {/* Design System Specimens */}
-            <MotionGallery />
+            <div className="caustic-anim-reveal-4">
+                <MotionGallery />
+            </div>
         </div>
     );
 }

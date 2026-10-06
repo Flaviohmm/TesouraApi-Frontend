@@ -3,16 +3,17 @@ import { ScissorsIcon } from '../ui/ScissorsIcon';
 import { useData } from '../../hooks/use-data';
 import type { HairService, Professional } from '../../types/api';
 import { money } from '../../utils/format';
+import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 
 export function Services() {
-    const { data, error } = useData<HairService>('/api/services');
+    const { data, error, loading } = useData<HairService>('/api/services');
     const { data: professionals } = useData<Professional>('/api/professionals');
     const activeStaff = professionals.filter((professional) => professional.isActive).length;
 
     return (
-        <section className="panel page-panel">
-            <div className="panel-title">
+        <section className="panel page-panel caustic-view-panel">
+            <div className="panel-title caustic-anim-reveal-1">
                 <div>
                     <div className="tag">
                         <i />
@@ -25,10 +26,12 @@ export function Services() {
                 </button>
             </div>
 
-            {error ? (
+            {loading ? (
+                <CausticLoader label="CALIBRANDO CATÁLOGO" variant="panel" />
+            ) : error ? (
                 <Empty text={error} />
             ) : (
-                <div className="service-grid">
+                <div className="service-grid caustic-anim-reveal-2">
                     {data.length ? (
                         data.map((service) => (
                             <article className="service-card" key={service.id}>
@@ -53,7 +56,7 @@ export function Services() {
                 </div>
             )}
 
-            <div className="team-telemetry mono">
+            <div className="team-telemetry mono caustic-anim-reveal-3">
                 <UserCheck size={14} style={{ color: 'var(--cool)' }} />
                 <span>{activeStaff} PROFISSIONAIS ATIVOS NA OPERAÇÃO</span>
             </div>

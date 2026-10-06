@@ -3,16 +3,17 @@ import { Mail, Phone, Plus, Star } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
 import type { Client } from '../../types/api';
 import { initial } from '../../utils/format';
+import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 import { ClientForm } from './ClientForm';
 
 export function Clients() {
     const [showForm, setShowForm] = useState(false);
-    const { data, error, reload } = useData<Client>('/api/clients');
+    const { data, error, loading, reload } = useData<Client>('/api/clients');
 
     return (
-        <section className="panel page-panel">
-            <div className="panel-title">
+        <section className="panel page-panel caustic-view-panel">
+            <div className="panel-title caustic-anim-reveal-1">
                 <div>
                     <div className="tag">
                         <i />
@@ -25,10 +26,12 @@ export function Clients() {
                 </button>
             </div>
 
-            {error ? (
+            {loading ? (
+                <CausticLoader label="SINCRONIZANDO BASE DE CLIENTES" variant="panel" />
+            ) : error ? (
                 <Empty text={error} />
             ) : (
-                <div className="caustic-rows-list">
+                <div className="caustic-rows-list caustic-anim-reveal-2">
                     {data.length ? (
                         data.map((client) => (
                             <div className="client-row" key={client.id}>

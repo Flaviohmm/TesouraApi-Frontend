@@ -3,10 +3,11 @@ import { ChevronLeft, ChevronRight, Filter, Plus } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
 import type { Appointment } from '../../types/api';
 import { AppointmentRow } from '../ui/AppointmentRow';
+import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 
 export function Agenda() {
-    const { data, error } = useData<Appointment>('/api/appointments');
+    const { data, error, loading } = useData<Appointment>('/api/appointments');
     const [filter, setFilter] = useState<'all' | 'confirmed' | 'scheduled'>('all');
 
     const filteredData = data.filter((item) => {
@@ -17,8 +18,8 @@ export function Agenda() {
     const sortedData = [...filteredData].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 
     return (
-        <section className="panel page-panel">
-            <div className="panel-title">
+        <section className="panel page-panel caustic-view-panel">
+            <div className="panel-title caustic-anim-reveal-1">
                 <div>
                     <div className="tag">
                         <i />
@@ -32,7 +33,7 @@ export function Agenda() {
             </div>
 
             {/* Day Nav & Filter Rail */}
-            <div className="agenda-toolbar">
+            <div className="agenda-toolbar caustic-anim-reveal-2">
                 <div className="day-nav">
                     <button className="icon-pill" aria-label="Dia anterior">
                         <ChevronLeft size={16} />
@@ -72,10 +73,12 @@ export function Agenda() {
             </div>
 
             {/* Appointments Ledger */}
-            {error ? (
+            {loading ? (
+                <CausticLoader label="CALIBRANDO SESSÕES DA AGENDA" variant="panel" />
+            ) : error ? (
                 <Empty text={error} />
             ) : sortedData.length ? (
-                <div className="caustic-rows-list">
+                <div className="caustic-rows-list caustic-anim-reveal-3">
                     {sortedData.map((item) => (
                         <AppointmentRow appointment={item} key={item.id} />
                     ))}
