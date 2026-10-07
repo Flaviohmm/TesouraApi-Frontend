@@ -1,1 +1,1 @@
-export type View = 'dashboard' | 'agenda' | 'clients' | 'services'
+export type View = 'dashboard' | 'agenda' | 'clients' | 'services' | 'professionals'

@@ -1220,6 +1220,87 @@ p {
   letter-spacing: 0.18em;
 }
 
+/* ═════════════════════════════════════════ PROFESSIONALS ══════════ */
+.professional-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.professional-card {
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid var(--hair);
+  background: var(--bg-card);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.professional-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(239, 154, 87, 0.3);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 18px 38px -10px rgba(0, 0, 0, 0.75);
+}
+
+.professional-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.professional-avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 14px;
+  flex: none;
+}
+
+.professional-identity {
+  display: grid;
+  gap: 6px;
+}
+
+.professional-name {
+  font-size: 15px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.professional-bio {
+  font-size: 12.5px;
+  color: var(--dim);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+
+.professional-card .duration-tag {
+  margin-bottom: 14px;
+  color: var(--amb);
+}
+
+.schedule-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.schedule-pill {
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  border: 1px solid var(--hair);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.schedule-pill-empty {
+  color: var(--faint);
+}
+
 /* ═══════════════════════════════════════════ MODALS ═══════════════ */
 .modal-backdrop {
   position: fixed;
@@ -1346,6 +1427,76 @@ p {
   border-color: var(--amb);
   background: rgba(255, 255, 255, 0.06);
   box-shadow: 0 0 0 3px var(--amb-dim);
+}
+
+/* ═══════════════════════════════════════════ SCHEDULE EDITOR ══════ */
+.schedule-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+  border: 1px solid var(--hair);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--hair);
+  transition: background-color 0.2s ease;
+}
+
+.schedule-row:last-child {
+  border-bottom: none;
+}
+
+.schedule-row.off {
+  opacity: 0.55;
+}
+
+.schedule-day-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink);
+  flex: none;
+  width: 110px;
+}
+
+.schedule-day-toggle input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--amb);
+  cursor: pointer;
+}
+
+.schedule-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.schedule-time-inputs input[type="time"] {
+  width: 110px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+}
+
+.schedule-time-sep {
+  font-size: 9px;
+  color: var(--faint);
+  letter-spacing: 0.1em;
+}
+
+.schedule-off-label {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  color: var(--faint);
 }
 
 .form-grid {
