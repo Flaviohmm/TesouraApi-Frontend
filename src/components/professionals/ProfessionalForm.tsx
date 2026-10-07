@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { api } from '../../services/api';
 import type { ProfessionalRequest, Schedule } from '../../types/api';
@@ -65,7 +66,7 @@ export function ProfessionalForm({ onClose, onCreated }: { onClose: () => void; 
     }
   }
 
-  return (
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="client-modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="professional-form-title">
         <div className="modal-header">
@@ -175,6 +176,7 @@ export function ProfessionalForm({ onClose, onCreated }: { onClose: () => void; 
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

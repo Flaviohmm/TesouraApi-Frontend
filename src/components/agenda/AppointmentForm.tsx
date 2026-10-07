@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { api } from '../../services/api';
 import { useData } from '../../hooks/use-data';
@@ -91,7 +92,7 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
           ? 'Selecione um horário disponível.'
           : '';
 
-  return (
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="client-modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="appointment-form-title">
         <div className="modal-header">
@@ -228,6 +229,7 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

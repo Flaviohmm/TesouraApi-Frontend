@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { api } from '../../services/api';
 import type { ClientRequest } from '../../types/api';
@@ -39,7 +40,7 @@ export function ClientForm({ onClose, onCreated }: { onClose: () => void; onCrea
     }
   }
 
-  return (
+  return createPortal(
     <div className="modal-backdrop" role="presentation" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="client-modal" role="dialog" aria-modal="true" aria-labelledby="client-form-title">
         <div className="modal-header">
@@ -131,6 +132,7 @@ export function ClientForm({ onClose, onCreated }: { onClose: () => void; onCrea
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
