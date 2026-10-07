@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Filter, Plus } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
 import type { Appointment } from '../../types/api';
+import { AppointmentForm } from './AppointmentForm';
 import { AppointmentRow } from '../ui/AppointmentRow';
 import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 
 export function Agenda() {
-    const { data, error, loading } = useData<Appointment>('/api/appointments');
+    const { data, error, loading, reload } = useData<Appointment>('/api/appointments');
     const [filter, setFilter] = useState<'all' | 'confirmed' | 'scheduled'>('all');
+    const [showForm, setShowForm] = useState(false);
 
     const filteredData = data.filter((item) => {
         if (filter === 'all') return true;
@@ -27,7 +29,7 @@ export function Agenda() {
                     </div>
                     <h2>Grade de Atendimentos</h2>
                 </div>
-                <button className="btn primary">
+                <button className="btn primary" onClick={() => setShowForm(true)}>
                     <Plus size={16} /> Agendar atendimento
                 </button>
             </div>
@@ -86,6 +88,8 @@ export function Agenda() {
             ) : (
                 <Empty text="Nenhum agendamento encontrado para este filtro." />
             )}
+
+            {showForm && <AppointmentForm onClose={() => setShowForm(false)} onCreated={reload} />}
         </section>
     );
 }

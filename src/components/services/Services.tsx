@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Clock3, Plus, UserCheck } from 'lucide-react';
 import { ScissorsIcon } from '../ui/ScissorsIcon';
 import { useData } from '../../hooks/use-data';
@@ -5,9 +6,11 @@ import type { HairService, Professional } from '../../types/api';
 import { money } from '../../utils/format';
 import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
+import { ServiceForm } from './ServiceForm';
 
 export function Services() {
-    const { data, error, loading } = useData<HairService>('/api/services');
+    const [showForm, setShowForm] = useState(false);
+    const { data, error, loading, reload } = useData<HairService>('/api/services');
     const { data: professionals } = useData<Professional>('/api/professionals');
     const activeStaff = professionals.filter((professional) => professional.isActive).length;
 
@@ -21,7 +24,7 @@ export function Services() {
                     </div>
                     <h2>Menu de Serviços</h2>
                 </div>
-                <button className="btn primary">
+                <button className="btn primary" onClick={() => setShowForm(true)}>
                     <Plus size={16} /> Novo serviço
                 </button>
             </div>
@@ -60,6 +63,8 @@ export function Services() {
                 <UserCheck size={14} style={{ color: 'var(--cool)' }} />
                 <span>{activeStaff} PROFISSIONAIS ATIVOS NA OPERAÇÃO</span>
             </div>
+
+            {showForm && <ServiceForm onClose={() => setShowForm(false)} onCreated={reload} />}
         </section>
     );
 }
