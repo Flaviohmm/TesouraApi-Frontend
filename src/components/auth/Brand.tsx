@@ -1,3 +1,4 @@
+import { Store } from 'lucide-react';
 import { AppLogo } from '../ui/AppLogo';
 
 export function Brand() {
@@ -26,6 +27,9 @@ export function Brand() {
                     Calibre horários, clientes e serviços com a precisão de um instrumento óptico.
                     Fluidez máxima para o seu negócio de estética e beleza.
                 </p>
+                <a className="brand-client-link auth-link mono" href="/descobrir">
+                    <Store size={14} /> É cliente? Encontre um salão →
+                </a>
             </div>
 
             <div className="brand-foot mono">

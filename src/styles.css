@@ -1964,6 +1964,15 @@ p {
   line-height: 1.66;
 }
 
+.brand-client-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 22px;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+}
+
 .brand-foot {
   position: relative;
   z-index: 1;
@@ -2553,4 +2562,22 @@ p {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ═══════════════════════════════════════ DESCOBRIR (CUSTOMER) ═════ */
+.salon-card {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  display: block;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.salon-card .professional-bio {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
