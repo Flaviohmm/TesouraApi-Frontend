@@ -8,6 +8,8 @@ import { formatTime, money } from '../../utils/format';
 import { CausticLoader } from '../ui/CausticLoader';
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
+const POINT_VALUE = 0.1;
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const { data: clients } = useData<Client>('/api/clients');
@@ -25,6 +27,7 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
   const [slots, setSlots] = useState<AvailableSlot[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
+  const [redeemPoints, setRedeemPoints] = useState(0);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,6 +40,17 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
   const selected = activeServices.filter((service) => serviceIds.includes(service.id));
   const totalDuration = selected.reduce((sum, service) => sum + service.durationMinutes, 0);
   const totalPrice = selected.reduce((sum, service) => sum + Number(service.price), 0);
+
+  const selectedClient = clients.find((client) => client.id === clientId) ?? null;
+  const maxRedeemablePoints = selectedClient
+    ? Math.max(0, Math.min(selectedClient.loyaltyPoints, Math.floor(totalPrice / POINT_VALUE)))
+    : 0;
+  const loyaltyDiscount = redeemPoints * POINT_VALUE;
+  const finalPrice = totalPrice - loyaltyDiscount;
+
+  useEffect(() => {
+    setRedeemPoints(0);
+  }, [clientId, serviceIds]);
 
   useEffect(() => {
     setSelectedSlot(null);
@@ -69,7 +83,8 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
         startsAt: selectedSlot.startsAt,
         serviceIds,
         notes: notes || undefined,
-        createdVia: 'web'
+        createdVia: 'web',
+        redeemPoints: redeemPoints > 0 ? redeemPoints : undefined
       };
       await api('/api/appointments', { method: 'POST', body: JSON.stringify(payload) });
       onCreated();
@@ -172,7 +187,47 @@ export function AppointmentForm({ onClose, onCreated }: { onClose: () => void; o
             {selected.length > 0 && (
               <div className="booking-summary mono">
                 <span>{selected.length} SERVIÇO{selected.length > 1 ? 'S' : ''} · {totalDuration} MIN</span>
-                <b>{money.format(totalPrice)}</b>
+                {redeemPoints > 0 ? (
+                  <span className="booking-summary-total">
+                    <s className="booking-summary-strike">{money.format(totalPrice)}</s>
+                    <b>{money.format(finalPrice)}</b>
+                  </span>
+                ) : (
+                  <b>{money.format(totalPrice)}</b>
+                )}
+              </div>
+            )}
+
+            {selectedClient && selectedClient.loyaltyPoints > 0 && totalPrice > 0 && (
+              <div className="loyalty-redeem">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span className="form-label mono">RESGATAR PONTOS DE FIDELIDADE</span>
+                  <span className="optional mono">{selectedClient.loyaltyPoints} PTS DISPONÍVEIS</span>
+                </div>
+                <div className="loyalty-redeem-row">
+                  <input
+                    type="number"
+                    min={0}
+                    max={maxRedeemablePoints}
+                    step={1}
+                    value={redeemPoints}
+                    onChange={(event) => setRedeemPoints(clamp(Number(event.target.value) || 0, 0, maxRedeemablePoints))}
+                    disabled={maxRedeemablePoints === 0}
+                  />
+                  <button
+                    type="button"
+                    className="btn secondary"
+                    onClick={() => setRedeemPoints(maxRedeemablePoints)}
+                    disabled={maxRedeemablePoints === 0}
+                  >
+                    Usar máximo
+                  </button>
+                </div>
+                {redeemPoints > 0 && (
+                  <p className="small-copy">
+                    {redeemPoints} pontos = {money.format(loyaltyDiscount)} de desconto.
+                  </p>
+                )}
               </div>
             )}
           </div>

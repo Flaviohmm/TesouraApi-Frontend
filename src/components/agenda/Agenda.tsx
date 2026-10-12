@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Filter, Plus } from 'lucide-react';
+import { api } from '../../services/api';
 import { useData } from '../../hooks/use-data';
 import type { Appointment } from '../../types/api';
 import { AppointmentForm } from './AppointmentForm';
@@ -9,7 +10,7 @@ import { Empty } from '../ui/Empty';
 
 export function Agenda() {
     const { data, error, loading, reload } = useData<Appointment>('/api/appointments');
-    const [filter, setFilter] = useState<'all' | 'confirmed' | 'scheduled'>('all');
+    const [filter, setFilter] = useState<'all' | 'confirmed' | 'scheduled' | 'completed'>('all');
     const [showForm, setShowForm] = useState(false);
 
     const filteredData = data.filter((item) => {
@@ -18,6 +19,11 @@ export function Agenda() {
     });
 
     const sortedData = [...filteredData].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+
+    const handleStatusChange = async (id: string, status: string) => {
+        await api(`/api/appointments/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) });
+        reload();
+    };
 
     return (
         <section className="panel page-panel caustic-view-panel">
@@ -71,6 +77,12 @@ export function Agenda() {
                     >
                         PENDENTES
                     </button>
+                    <button
+                        className={`filter-pill mono ${filter === 'completed' ? 'active' : ''}`}
+                        onClick={() => setFilter('completed')}
+                    >
+                        CONCLUÍDOS
+                    </button>
                 </div>
             </div>
 
@@ -82,7 +94,7 @@ export function Agenda() {
             ) : sortedData.length ? (
                 <div className="caustic-rows-list caustic-anim-reveal-3">
                     {sortedData.map((item) => (
-                        <AppointmentRow appointment={item} key={item.id} />
+                        <AppointmentRow appointment={item} onStatusChange={handleStatusChange} key={item.id} />
                     ))}
                 </div>
             ) : (

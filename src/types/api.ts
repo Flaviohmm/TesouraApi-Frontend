@@ -1,6 +1,6 @@
 export type LoginResponse = { accessToken: string; tokenType: string; name: string; role: string }
 export type RegisterRequest = { salonName: string; slug: string; ownerName: string; email: string; password: string; phone?: string }
-export type Appointment = { id: string; clientName: string; professionalName: string; startsAt: string; endsAt: string; status: string; totalPrice: number; services: { name: string }[] }
+export type Appointment = { id: string; clientName: string; professionalName: string; startsAt: string; endsAt: string; status: string; totalPrice: number; loyaltyPointsRedeemed: number; loyaltyDiscountAmount: number; services: { name: string }[] }
 export type Client = { id: string; name: string; phone: string; email?: string; birthday?: string; notes?: string; loyaltyPoints: number }
 export type ClientRequest = { name: string; phone: string; email?: string; birthday?: string; notes?: string }
 export type Schedule = { id?: string; weekday: number; startTime: string; endTime: string; breakStart?: string; breakEnd?: string }
@@ -9,7 +9,7 @@ export type ProfessionalRequest = { name: string; bio?: string; commissionRate?:
 export type HairService = { id: string; name: string; description?: string; durationMinutes: number; price: number; category?: string; isActive: boolean }
 export type HairServiceRequest = { name: string; description?: string; durationMinutes: number; price: number; category?: string }
 export type AvailableSlot = { startsAt: string; endsAt: string; professionalId: string }
-export type AppointmentRequest = { clientId: string; professionalId: string; startsAt: string; serviceIds: string[]; notes?: string; createdVia?: string }
+export type AppointmentRequest = { clientId: string; professionalId: string; startsAt: string; serviceIds: string[]; notes?: string; createdVia?: string; redeemPoints?: number }
 export type Salon = {
   id: string
   name: string
