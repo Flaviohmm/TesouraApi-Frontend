@@ -12,6 +12,7 @@ export function Agenda() {
     const { data, error, loading, reload } = useData<Appointment>('/api/appointments');
     const [filter, setFilter] = useState<'all' | 'confirmed' | 'scheduled' | 'completed'>('all');
     const [showForm, setShowForm] = useState(false);
+    var date = new Date();
 
     const filteredData = data.filter((item) => {
         if (filter === 'all') return true;
@@ -48,7 +49,7 @@ export function Agenda() {
                     </button>
                     <span className="mono day-indicator">
                         <i className="status-live-dot" />
-                        HOJE · 01 OUTUBRO 2026
+                        HOJE · {date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}
                     </span>
                     <button className="icon-pill" aria-label="Próximo dia">
                         <ChevronRight size={16} />

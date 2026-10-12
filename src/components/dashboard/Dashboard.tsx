@@ -1,6 +1,6 @@
 import { ChevronRight, Plus } from 'lucide-react';
 import { useData } from '../../hooks/use-data';
-import type { Appointment } from '../../types/api';
+import type { Appointment, Professional } from '../../types/api';
 import type { View } from '../../types/view';
 import { formatTime, money } from '../../utils/format';
 import { AppointmentRow } from '../ui/AppointmentRow';
@@ -8,6 +8,10 @@ import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 import { Metric } from '../ui/Metric';
 
+const minutesOf = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+};
 
 export function Dashboard({ setView }: {
     setView: (view: View) => void;
@@ -17,8 +21,26 @@ export function Dashboard({ setView }: {
     const to = new Date(from);
     to.setDate(to.getDate() + 1);
     const { data: appointments, error, loading } = useData<Appointment>(`/api/appointments?from=${from.toISOString()}&to=${to.toISOString()}`);
+    const { data: professionals } = useData<Professional>('/api/professionals');
+
     const total = appointments.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
-    const occupancy = Math.min(appointments.length * 17, 100);
+
+    const todayWeekday = from.getDay();
+    const capacityMinutes = professionals
+        .filter((professional) => professional.isActive)
+        .reduce((sum, professional) => {
+            const schedule = professional.schedules?.find((item) => item.weekday === todayWeekday);
+            if (!schedule) return sum;
+            let minutes = minutesOf(schedule.endTime) - minutesOf(schedule.startTime);
+            if (schedule.breakStart && schedule.breakEnd) {
+                minutes -= minutesOf(schedule.breakEnd) - minutesOf(schedule.breakStart);
+            }
+            return sum + Math.max(0, minutes);
+        }, 0);
+    const bookedMinutes = appointments
+        .filter((item) => item.status !== 'cancelled')
+        .reduce((sum, item) => sum + (new Date(item.endsAt).getTime() - new Date(item.startsAt).getTime()) / 60000, 0);
+    const occupancy = capacityMinutes > 0 ? Math.min(Math.round((bookedMinutes / capacityMinutes) * 100), 100) : 0;
 
     return (
         <div className="dashboard-content caustic-stagger-container">
