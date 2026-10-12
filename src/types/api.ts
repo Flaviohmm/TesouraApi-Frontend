@@ -10,3 +10,19 @@ export type HairService = { id: string; name: string; description?: string; dura
 export type HairServiceRequest = { name: string; description?: string; durationMinutes: number; price: number; category?: string }
 export type AvailableSlot = { startsAt: string; endsAt: string; professionalId: string }
 export type AppointmentRequest = { clientId: string; professionalId: string; startsAt: string; serviceIds: string[]; notes?: string; createdVia?: string }
+export type Salon = {
+  id: string
+  name: string
+  slug: string
+  phone?: string
+  address?: string
+  timezone?: string
+  logoUrl?: string
+  subscriptionPlan?: string
+  subscriptionStatus?: string
+  trialEndsAt?: string
+  createdAt: string
+  updatedAt: string
+}
+export type SalonRequest = { name: string; phone?: string; address?: string; timezone?: string; logoUrl?: string }
+export type Me = { userId: string; salonId: string; name: string; email: string; phone?: string; role: string }

@@ -1,4 +1,4 @@
-import { CalendarDays, LayoutDashboard, LogOut, Menu, Search, Settings, UserCog, Users } from 'lucide-react';
+import { CalendarDays, LayoutDashboard, LogOut, Menu, Search, Settings as SettingsIcon, UserCog, Users } from 'lucide-react';
 import type { View } from '../../types/view';
 import { initial } from '../../utils/format';
 import { Agenda } from '../agenda/Agenda';
@@ -6,6 +6,7 @@ import { Clients } from '../clients/Clients';
 import { Dashboard } from '../dashboard/Dashboard';
 import { Professionals } from '../professionals/Professionals';
 import { Services } from '../services/Services';
+import { Settings } from '../settings/Settings';
 import { AppLogo } from '../ui/AppLogo';
 import { ScissorsIcon } from '../ui/ScissorsIcon';
 
@@ -30,7 +31,8 @@ export function Shell({ view, setView, menuOpen, setMenuOpen, onLogout }: {
         agenda: 'Agenda de Atendimentos',
         clients: 'Diretório de Clientes',
         services: 'Catálogo de Serviços',
-        professionals: 'Equipe de Profissionais'
+        professionals: 'Equipe de Profissionais',
+        settings: 'Configurações do Salão'
     };
 
     const formattedDate = new Date().toLocaleDateString('pt-BR', {
@@ -67,8 +69,11 @@ export function Shell({ view, setView, menuOpen, setMenuOpen, onLogout }: {
                 </nav>
 
                 <div className="sidebar-bottom">
-                    <button className="nav-item action-item">
-                        <Settings size={18} className="nav-icon" />
+                    <button
+                        className={`nav-item action-item ${view === 'settings' ? 'active' : ''}`}
+                        onClick={() => { setView('settings'); setMenuOpen(false) }}
+                    >
+                        <SettingsIcon size={18} className="nav-icon" />
                         <span className="nav-label">Configurações</span>
                     </button>
                     <button className="nav-item action-item" onClick={onLogout}>
@@ -117,6 +122,7 @@ export function Shell({ view, setView, menuOpen, setMenuOpen, onLogout }: {
                     {view === 'clients' && <Clients />}
                     {view === 'services' && <Services />}
                     {view === 'professionals' && <Professionals />}
+                    {view === 'settings' && <Settings />}
                 </div>
             </main>
         </div>

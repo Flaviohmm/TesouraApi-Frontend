@@ -7,7 +7,7 @@ import { AppointmentRow } from '../ui/AppointmentRow';
 import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
 import { Metric } from '../ui/Metric';
-import { MotionGallery } from '../ui/MotionGallery';
+
 
 export function Dashboard({ setView }: {
     setView: (view: View) => void;
@@ -131,11 +131,7 @@ export function Dashboard({ setView }: {
                     </button>
                 </div>
             </section>
-
-            {/* Design System Specimens */}
-            <div className="caustic-anim-reveal-4">
-                <MotionGallery />
-            </div>
+            
         </div>
     );
 }
