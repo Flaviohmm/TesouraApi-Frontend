@@ -23,6 +23,9 @@ export type Salon = {
   trialEndsAt?: string
   createdAt: string
   updatedAt: string
+  platformCommissionRate?: number
 }
 export type SalonRequest = { name: string; phone?: string; address?: string; timezone?: string; logoUrl?: string }
 export type Me = { userId: string; salonId: string; name: string; email: string; phone?: string; role: string }
+export type TransactionType = 'income' | 'expense' | 'commission'
+export type Transaction = { id: string; appointmentId?: string; type: TransactionType; amount: number; description?: string; createdAt: string }

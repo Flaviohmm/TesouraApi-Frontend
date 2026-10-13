@@ -864,13 +864,15 @@ p {
 }
 
 .appointment-row:hover,
-.client-row:hover {
+.client-row:hover,
+.transaction-row:hover {
   background: rgba(255, 255, 255, 0.025);
 }
 
 /* Expanding Amber Indicator */
 .appointment-row .ind,
-.client-row .ind {
+.client-row .ind,
+.transaction-row .ind {
   width: 0;
   height: 2px;
   background: var(--amb);
@@ -880,7 +882,8 @@ p {
 }
 
 .appointment-row:hover .ind,
-.client-row:hover .ind {
+.client-row:hover .ind,
+.transaction-row:hover .ind {
   width: 14px;
 }
 
@@ -2562,6 +2565,21 @@ p {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════ TRANSACTIONS ═════════ */
+.transaction-row {
+  display: grid;
+  grid-template-columns: 8px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--hair);
+}
+
+.transaction-row:last-child {
+  border-bottom: none;
 }
 
 /* ═══════════════════════════════════════ DESCOBRIR (CUSTOMER) ═════ */

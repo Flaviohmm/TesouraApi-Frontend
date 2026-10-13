@@ -1,10 +1,23 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api';
-import type { Me, Salon, SalonRequest } from '../../types/api';
-import { formatPhone, initial } from '../../utils/format';
+import type { Me, Salon, SalonRequest, Transaction } from '../../types/api';
+import { formatPhone, initial, money } from '../../utils/format';
 import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
+import { Metric } from '../ui/Metric';
+
+const TRANSACTION_TYPE_LABELS: Record<string, string> = {
+    income: 'Receita',
+    commission: 'Comissão',
+    expense: 'Despesa'
+};
+
+const TRANSACTION_TYPE_STATUS: Record<string, string> = {
+    income: 'status-confirmed',
+    commission: 'status-cancelled',
+    expense: 'status-pending'
+};
 
 const PLAN_LABELS: Record<string, string> = {
     trial: 'Teste grátis',
@@ -20,6 +33,7 @@ const ROLE_LABELS: Record<string, string> = {
 export function Settings() {
     const [salon, setSalon] = useState<Salon | null>(null);
     const [me, setMe] = useState<Me | null>(null);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
 
@@ -36,10 +50,11 @@ export function Settings() {
     useEffect(() => {
         setLoading(true);
         setLoadError('');
-        Promise.all([api<Salon>('/api/salons/me'), api<Me>('/api/auth/me')])
-            .then(([salonResult, meResult]) => {
+        Promise.all([api<Salon>('/api/salons/me'), api<Me>('/api/auth/me'), api<Transaction[]>('/api/transactions')])
+            .then(([salonResult, meResult, transactionsResult]) => {
                 setSalon(salonResult);
                 setMe(meResult);
+                setTransactions(transactionsResult);
                 setForm({
                     name: salonResult.name,
                     phone: salonResult.phone ?? '',
@@ -223,9 +238,67 @@ export function Settings() {
                     )}
                 </div>
 
+                {salon.platformCommissionRate != null && (
+                    <p className="small-copy">
+                        Comissão da plataforma: <span className="mono">{(salon.platformCommissionRate * 100).toFixed(0)}%</span>
+                    </p>
+                )}
+
                 <p className="small-copy">
                     Identificador público: <span className="mono">@{salon.slug}</span>
                 </p>
+            </div>
+
+            <div className="panel schedule-panel">
+                <div className="tag">
+                    <i />
+                    <span className="mono">RESUMO FINANCEIRO</span>
+                </div>
+                <h2>Receita, comissão e líquido</h2>
+
+                <div className="form-grid" style={{ marginBottom: 16 }}>
+                    <Metric
+                        label="RECEITA BRUTA"
+                        value={money.format(transactions.filter((item) => item.type === 'income').reduce((sum, item) => sum + item.amount, 0))}
+                        note="Total de atendimentos concluídos"
+                    />
+                    <Metric
+                        label="COMISSÃO TESOURA"
+                        value={money.format(transactions.filter((item) => item.type === 'commission').reduce((sum, item) => sum + item.amount, 0))}
+                        note="Retida pela plataforma"
+                    />
+                    <Metric
+                        label="RECEITA LÍQUIDA"
+                        value={money.format(
+                            transactions.filter((item) => item.type === 'income').reduce((sum, item) => sum + item.amount, 0)
+                            - transactions.filter((item) => item.type === 'commission').reduce((sum, item) => sum + item.amount, 0)
+                        )}
+                        note="Após comissão"
+                    />
+                </div>
+
+                {transactions.length === 0 ? (
+                    <Empty text="Nenhuma transação registrada ainda." />
+                ) : (
+                    <div>
+                        {transactions.slice(0, 10).map((transaction) => (
+                            <div className="transaction-row" key={transaction.id}>
+                                <span className="ind" aria-hidden="true" />
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                    <b className="client-name">{transaction.description || TRANSACTION_TYPE_LABELS[transaction.type]}</b>
+                                    <span className="small-copy mono">
+                                        {new Date(transaction.createdAt).toLocaleDateString('pt-BR')}
+                                    </span>
+                                </div>
+                                <span className={`status ${TRANSACTION_TYPE_STATUS[transaction.type] ?? 'status-pending'} mono`}>
+                                    <i className="status-dot" />
+                                    {TRANSACTION_TYPE_LABELS[transaction.type] ?? transaction.type}
+                                </span>
+                                <b className="mono">{money.format(transaction.amount)}</b>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );
