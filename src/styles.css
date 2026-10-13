@@ -2565,19 +2565,101 @@ p {
 }
 
 /* ═══════════════════════════════════════ DESCOBRIR (CUSTOMER) ═════ */
-.salon-card {
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  width: 100%;
-  display: block;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.salon-card .professional-bio {
+.discover-search {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  max-width: 420px;
+  padding: 13px 16px;
+  margin-top: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--hair-bright);
+  background: rgba(5, 6, 9, 0.55);
+  color: var(--dim);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.discover-search:focus-within {
+  border-color: rgba(239, 154, 87, 0.5);
+  color: var(--amb);
+}
+
+.discover-search input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  padding: 0;
+}
+
+.discover-search input::placeholder {
+  color: var(--dim);
+}
+
+.salon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.salon-card-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid var(--hair);
+  background: var(--bg-card);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 16px 36px -12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.salon-card-tile:hover {
+  transform: translateY(-4px);
+  border-color: rgba(239, 154, 87, 0.3);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07), 0 18px 38px -10px rgba(0, 0, 0, 0.75);
+}
+
+.salon-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.salon-card-avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 15px;
+}
+
+.salon-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--amb);
+}
+
+.salon-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.salon-card-meta .client-contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.salon-card-cta {
+  justify-content: center;
 }

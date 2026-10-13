@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapPin, Phone, Search } from 'lucide-react';
+import { ArrowRight, MapPin, Phone, Search, Sparkles, Store } from 'lucide-react';
 import { customerApi } from './customerApi';
 import type { PublicSalon } from '../types/customer';
 import { initial } from '../utils/format';
@@ -24,65 +24,82 @@ export function SalonDirectory({ onOpen }: { onOpen: (slug: string) => void }) {
     const filtered = salons.filter((salon) => salon.name.toLowerCase().includes(query.trim().toLowerCase()));
 
     return (
-        <section className="panel page-panel caustic-view-panel">
-            <div className="panel-title caustic-anim-reveal-1">
-                <div>
+        <div className="discover-content caustic-stagger-container">
+            <section className="caustic-hero caustic-anim-reveal-1">
+                <div className="caustic-hero-bg" aria-hidden="true">
+                    <div className="hero-radial hero-radial-amber" />
+                    <div className="hero-radial hero-radial-cool" />
+                </div>
+                <div className="caustic-hero-content">
                     <div className="tag">
                         <i />
                         <span className="mono">SALÕES PARCEIROS</span>
                     </div>
-                    <h2>Descubra um salão</h2>
+                    <h1>
+                        Seu próximo horário, <em>a um clique.</em>
+                    </h1>
+                    <p className="caustic-hero-lead">
+                        Explore <strong>{loading ? '...' : salons.length}</strong> salões parceiros, escolha o
+                        profissional e agende na hora — sem ligação, sem espera.
+                    </p>
+                    <label className="discover-search">
+                        <Search size={16} />
+                        <input
+                            value={query}
+                            onChange={(event) => setQuery(event.target.value)}
+                            placeholder="Buscar salão por nome..."
+                        />
+                    </label>
+                    <a className="brand-client-link auth-link mono" href="/">
+                        <Store size={14} /> É dono de um salão? Entrar como empresa →
+                    </a>
                 </div>
-            </div>
-
-            <div className="client-form caustic-anim-reveal-2" style={{ marginBottom: 20 }}>
-                <label>
-                    <span className="form-label mono">
-                        <Search size={12} /> BUSCAR
-                    </span>
-                    <input
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
-                        placeholder="Nome do salão..."
-                    />
-                </label>
-            </div>
+                <div className="caustic-hero-spec mono">
+                    <div>DESCOBRIR · AGENDAR</div>
+                    <div>RELAXAR</div>
+                </div>
+            </section>
 
             {loading ? (
                 <CausticLoader label="CARREGANDO SALÕES" variant="panel" />
             ) : error ? (
                 <Empty text={error} />
             ) : filtered.length ? (
-                <div className="professional-grid caustic-anim-reveal-3">
+                <div className="salon-grid caustic-anim-reveal-2">
                     {filtered.map((salon) => (
-                        <button
-                            type="button"
-                            className="professional-card salon-card"
-                            key={salon.id}
-                            onClick={() => onOpen(salon.slug)}
-                        >
-                            <div className="professional-card-top">
-                                <div className="avatar professional-avatar">{initial(salon.name)}</div>
+                        <article className="salon-card-tile" key={salon.id}>
+                            <div className="salon-card-top">
+                                <div className="avatar professional-avatar salon-card-avatar">{initial(salon.name)}</div>
                                 <div className="professional-identity">
                                     <b className="professional-name">{salon.name}</b>
+                                    <span className="salon-card-badge mono">
+                                        <Sparkles size={11} /> PARCEIRO
+                                    </span>
                                 </div>
                             </div>
-                            {salon.address && (
-                                <p className="professional-bio">
-                                    <MapPin size={12} className="meta-icon" /> {salon.address}
-                                </p>
-                            )}
-                            {salon.phone && (
-                                <span className="client-contact mono">
-                                    <Phone size={12} className="meta-icon" /> {salon.phone}
-                                </span>
-                            )}
-                        </button>
+
+                            <div className="salon-card-meta">
+                                {salon.address && (
+                                    <span className="client-contact mono">
+                                        <MapPin size={12} className="meta-icon" /> {salon.address}
+                                    </span>
+                                )}
+                                {salon.phone && (
+                                    <span className="client-contact mono">
+                                        <Phone size={12} className="meta-icon" /> {salon.phone}
+                                    </span>
+                                )}
+                            </div>
+
+                            <button type="button" className="btn primary wide salon-card-cta" onClick={() => onOpen(salon.slug)}>
+                                Ver salão e agendar <ArrowRight size={15} />
+                            </button>
+                        </article>
                     ))}
                 </div>
             ) : (
                 <Empty text="Nenhum salão encontrado." />
             )}
-        </section>
+        </div>
     );
 }
