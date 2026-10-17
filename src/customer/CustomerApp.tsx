@@ -11,7 +11,7 @@ import { useCustomerRoute } from './useCustomerRoute';
 export function CustomerApp() {
     const [token, setToken] = useState(() => localStorage.getItem('tesoura_customer_token'));
     const [name, setName] = useState(() => localStorage.getItem('tesoura_customer_name'));
-    const { screen, slug, returnTo, navigate } = useCustomerRoute();
+    const { screen, slug, returnTo, navigate, appointmentId, stripeReturn } = useCustomerRoute();
 
     const onAuth = (data: CustomerLoginResponse) => {
         localStorage.setItem('tesoura_customer_token', data.accessToken);
@@ -80,6 +80,8 @@ export function CustomerApp() {
                             onNeedLogin={() => navigate(`/descobrir/login?returnTo=/descobrir/salao/${slug}`)}
                             onBack={() => navigate('/descobrir')}
                             onViewBookings={() => navigate('/descobrir/minhas-reservas')}
+                            appointmentId={appointmentId}
+                            stripeReturn={stripeReturn}
                         />
                     )}
                     {screen === 'directory' && (

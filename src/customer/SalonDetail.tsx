@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle2, MapPin, Phone } from 'lucide-react';
 import { customerApi } from './customerApi';
-import type { AvailableSlot } from '../types/api';
-import type { PublicAppointmentRequest, PublicSalonDetail } from '../types/customer';
+import type { Appointment, AvailableSlot } from '../types/api';
+import type { PaymentCheckout, PaymentStatusResponse, PublicAppointmentRequest, PublicSalonDetail } from '../types/customer';
 import { formatTime, money } from '../utils/format';
 import { CausticLoader } from '../components/ui/CausticLoader';
 import { Empty } from '../components/ui/Empty';
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBookings }: {
+export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBookings, appointmentId, stripeReturn }: {
     slug: string;
     loggedIn: boolean;
     onNeedLogin: () => void;
     onBack: () => void;
     onViewBookings: () => void;
+    appointmentId?: string;
+    stripeReturn?: boolean;
 }) {
     const [salon, setSalon] = useState<PublicSalonDetail | null>(null);
     const [loading, setLoading] = useState(true);
@@ -29,9 +31,12 @@ export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBooking
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
 
+    const [paymentChoice, setPaymentChoice] = useState<'salon' | 'online'>('salon');
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [confirmed, setConfirmed] = useState(false);
+
+    const [returnStatus, setReturnStatus] = useState<PaymentStatusResponse['status'] | null>(stripeReturn ? 'pending' : null);
 
     useEffect(() => {
         setLoading(true);
@@ -70,6 +75,30 @@ export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBooking
         return () => { cancelled = true; };
     }, [slug, professionalId, date, serviceIds]);
 
+    // Retorno do Checkout da Stripe: polling curto, já que a Stripe só redireciona de volta
+    // depois que o pagamento (inclusive PIX/boleto assíncronos) chega a um estado final.
+    useEffect(() => {
+        if (!stripeReturn || !appointmentId || returnStatus !== 'pending') return;
+        let cancelled = false;
+        let attempts = 0;
+        const interval = window.setInterval(async () => {
+            attempts += 1;
+            try {
+                const result = await customerApi<PaymentStatusResponse>(
+                    `/api/public/salons/${slug}/appointments/${appointmentId}/payments/status`
+                );
+                if (cancelled) return;
+                if (result.status !== 'pending' || attempts >= 10) {
+                    setReturnStatus(result.status);
+                    window.clearInterval(interval);
+                }
+            } catch {
+                // ignora erros transitórios, continua tentando
+            }
+        }, 2000);
+        return () => { cancelled = true; window.clearInterval(interval); };
+    }, [stripeReturn, appointmentId, returnStatus, slug]);
+
     async function submit() {
         if (!selectedSlot) return;
         if (!loggedIn) {
@@ -85,8 +114,16 @@ export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBooking
                 serviceIds,
                 notes: notes || undefined
             };
-            await customerApi(`/api/public/salons/${slug}/appointments`, { method: 'POST', body: JSON.stringify(payload) });
-            setConfirmed(true);
+            const created = await customerApi<Appointment>(`/api/public/salons/${slug}/appointments`, { method: 'POST', body: JSON.stringify(payload) });
+            if (paymentChoice === 'salon') {
+                setConfirmed(true);
+                return;
+            }
+            const checkout = await customerApi<PaymentCheckout>(
+                `/api/public/salons/${slug}/appointments/${created.id}/payments`,
+                { method: 'POST' }
+            );
+            window.location.href = checkout.checkoutUrl;
         } catch (reason) {
             setSubmitError(reason instanceof Error ? reason.message : 'Não foi possível concluir o agendamento.');
         } finally {
@@ -110,15 +147,41 @@ export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBooking
         );
     }
 
-    if (confirmed) {
+    if (stripeReturn && returnStatus === 'pending') {
+        return (
+            <section className="panel page-panel caustic-view-panel">
+                <CausticLoader label="VERIFICANDO PAGAMENTO" variant="panel" />
+            </section>
+        );
+    }
+
+    if (confirmed || returnStatus === 'approved') {
         return (
             <section className="panel page-panel caustic-view-panel">
                 <div className="empty" style={{ padding: '48px 0' }}>
                     <div className="empty-mark"><CheckCircle2 size={18} /></div>
-                    <p className="empty-text">Agendamento confirmado em {salon.name}!</p>
+                    <p className="empty-text">
+                        {returnStatus === 'approved'
+                            ? `Pagamento aprovado! Agendamento confirmado em ${salon.name}.`
+                            : `Agendamento confirmado em ${salon.name}!`}
+                    </p>
                     <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
                         <button className="btn secondary" onClick={onBack}>Voltar ao diretório</button>
                         <button className="btn primary" onClick={onViewBookings}>Ver minhas reservas</button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (returnStatus && returnStatus !== 'pending') {
+        return (
+            <section className="panel page-panel caustic-view-panel">
+                <div className="empty" style={{ padding: '48px 0' }}>
+                    <p className="empty-text">Pagamento não aprovado.</p>
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
+                        <button className="btn primary" onClick={() => setConfirmed(true)}>Confirmar e pagar no salão</button>
+                        <button className="btn secondary" onClick={onBack}>Voltar ao diretório</button>
                     </div>
                 </div>
             </section>
@@ -239,12 +302,30 @@ export function SalonDetail({ slug, loggedIn, onNeedLogin, onBack, onViewBooking
                     />
                 </label>
 
+                {canSubmit && (
+                    <div>
+                        <span className="form-label mono">PAGAMENTO</span>
+                        <div className="service-pick-grid">
+                            <button type="button" className={`service-pick-chip ${paymentChoice === 'salon' ? 'active' : ''}`} onClick={() => setPaymentChoice('salon')}>
+                                <span className="service-pick-name">Pagar no salão</span>
+                                <span className="service-pick-meta mono">Dinheiro/cartão na hora</span>
+                            </button>
+                            <button type="button" className={`service-pick-chip ${paymentChoice === 'online' ? 'active' : ''}`} onClick={() => setPaymentChoice('online')}>
+                                <span className="service-pick-name">Pagar agora online</span>
+                                <span className="service-pick-meta mono">PIX, cartão ou boleto</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {submitError && <p className="form-error mono">{submitError}</p>}
 
                 <div className="modal-actions">
                     {!canSubmit && missingStep && <span className="optional mono modal-hint">{missingStep}</span>}
                     <button type="button" className="btn primary" disabled={!canSubmit} onClick={submit}>
-                        {submitting ? 'Agendando...' : loggedIn ? 'Confirmar agendamento' : 'Entrar e agendar'}
+                        {submitting
+                            ? (paymentChoice === 'online' ? 'Redirecionando...' : 'Agendando...')
+                            : loggedIn ? 'Confirmar agendamento' : 'Entrar e agendar'}
                     </button>
                 </div>
             </div>

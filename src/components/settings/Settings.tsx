@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { api } from '../../services/api';
-import type { Me, Salon, SalonRequest, Transaction } from '../../types/api';
+import type { Me, Salon, SalonRequest, StripeAccountStatus, Transaction } from '../../types/api';
 import { formatPhone, initial, money } from '../../utils/format';
 import { CausticLoader } from '../ui/CausticLoader';
 import { Empty } from '../ui/Empty';
@@ -34,6 +34,9 @@ export function Settings() {
     const [salon, setSalon] = useState<Salon | null>(null);
     const [me, setMe] = useState<Me | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [stripeStatus, setStripeStatus] = useState<StripeAccountStatus | null>(null);
+    const [stripeConnecting, setStripeConnecting] = useState(false);
+    const [stripeError, setStripeError] = useState('');
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
 
@@ -66,6 +69,24 @@ export function Settings() {
             .catch((reason: Error) => setLoadError(reason.message))
             .finally(() => setLoading(false));
     }, []);
+
+    useEffect(() => {
+        api<StripeAccountStatus>('/api/salons/me/stripe/status')
+            .then(setStripeStatus)
+            .catch(() => setStripeStatus(null));
+    }, []);
+
+    async function connectStripe() {
+        setStripeConnecting(true);
+        setStripeError('');
+        try {
+            const { url } = await api<{ url: string }>('/api/salons/me/stripe/connect');
+            window.location.href = url;
+        } catch (reason) {
+            setStripeError(reason instanceof Error ? reason.message : 'Não foi possível iniciar a conexão com o Stripe.');
+            setStripeConnecting(false);
+        }
+    }
 
     async function submit(event: FormEvent) {
         event.preventDefault();
@@ -247,6 +268,52 @@ export function Settings() {
                 <p className="small-copy">
                     Identificador público: <span className="mono">@{salon.slug}</span>
                 </p>
+            </div>
+
+            <div className="panel pulse-panel">
+                <div className="tag">
+                    <i />
+                    <span className="mono">PAGAMENTOS ONLINE</span>
+                </div>
+                <h2>Stripe</h2>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                    {stripeStatus?.chargesEnabled ? (
+                        <span className="status status-confirmed">
+                            <i className="status-dot" />
+                            Conectado
+                        </span>
+                    ) : stripeStatus?.connected ? (
+                        <span className="status status-pending">
+                            <i className="status-dot" />
+                            Configuração pendente
+                        </span>
+                    ) : (
+                        <span className="status status-pending">
+                            <i className="status-dot" />
+                            Não conectado
+                        </span>
+                    )}
+                </div>
+
+                {stripeStatus?.chargesEnabled ? (
+                    <p className="small-copy">
+                        Conta Stripe vinculada. Clientes já podem pagar agendamentos online (PIX, cartão ou
+                        boleto), com o split de comissão aplicado automaticamente.
+                    </p>
+                ) : (
+                    <>
+                        <p className="small-copy" style={{ marginBottom: 12 }}>
+                            {stripeStatus?.connected
+                                ? 'A configuração da conta Stripe ainda não foi concluída. Continue o cadastro.'
+                                : 'Conecte uma conta Stripe pra aceitar pagamentos online (PIX, cartão e boleto) diretamente na reserva do cliente.'}
+                        </p>
+                        <button className="btn primary" disabled={stripeConnecting} onClick={connectStripe}>
+                            {stripeConnecting ? 'Redirecionando...' : stripeStatus?.connected ? 'Continuar configuração' : 'Conectar Stripe'}
+                        </button>
+                    </>
+                )}
+                {stripeError && <p className="form-error mono" style={{ marginTop: 10 }}>{stripeError}</p>}
             </div>
 
             <div className="panel schedule-panel">

@@ -2,13 +2,22 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type CustomerScreen = 'directory' | 'salon' | 'login' | 'register' | 'my-bookings';
 
-export type CustomerRoute = { screen: CustomerScreen; slug?: string; returnTo: string };
+export type CustomerRoute = {
+  screen: CustomerScreen;
+  slug?: string;
+  returnTo: string;
+  appointmentId?: string;
+  stripeReturn?: boolean;
+};
 
 function parse(pathname: string, search: string): CustomerRoute {
   const parts = pathname.replace(/^\/descobrir\/?/, '').split('/').filter(Boolean);
-  const returnTo = new URLSearchParams(search).get('returnTo') || '/descobrir';
+  const params = new URLSearchParams(search);
+  const returnTo = params.get('returnTo') || '/descobrir';
+  const appointmentId = params.get('appointmentId') || undefined;
+  const stripeReturn = params.get('stripeReturn') === '1';
 
-  if (parts[0] === 'salao' && parts[1]) return { screen: 'salon', slug: parts[1], returnTo };
+  if (parts[0] === 'salao' && parts[1]) return { screen: 'salon', slug: parts[1], returnTo, appointmentId, stripeReturn };
   if (parts[0] === 'login') return { screen: 'login', returnTo };
   if (parts[0] === 'registrar') return { screen: 'register', returnTo };
   if (parts[0] === 'minhas-reservas') return { screen: 'my-bookings', returnTo };

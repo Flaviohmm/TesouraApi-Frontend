@@ -29,3 +29,4 @@ export type SalonRequest = { name: string; phone?: string; address?: string; tim
 export type Me = { userId: string; salonId: string; name: string; email: string; phone?: string; role: string }
 export type TransactionType = 'income' | 'expense' | 'commission'
 export type Transaction = { id: string; appointmentId?: string; type: TransactionType; amount: number; description?: string; createdAt: string }
+export type StripeAccountStatus = { connected: boolean; chargesEnabled: boolean; accountId?: string }

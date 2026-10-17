@@ -5,3 +5,6 @@ export type PublicSalonDetail = PublicSalon & { timezone?: string; services: Pub
 export type CustomerLoginResponse = { accessToken: string; tokenType: string; expiresIn: number; customerId: string; name: string }
 export type Customer = { id: string; name: string; email: string; phone?: string }
 export type PublicAppointmentRequest = { professionalId: string; startsAt: string; serviceIds: string[]; notes?: string }
+export type PaymentStatusValue = 'pending' | 'approved' | 'rejected' | 'refunded' | 'cancelled'
+export type PaymentCheckout = { paymentId: string; checkoutUrl: string }
+export type PaymentStatusResponse = { status: PaymentStatusValue }
